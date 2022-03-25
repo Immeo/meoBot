@@ -1,17 +1,15 @@
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
+async def on_startup(dp):
 
-from data.config import TOKEN
+    from utils.notify_admins import on_startup_notify_admins
+    from utils.set_bot_commands import set_commands
 
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+    await on_startup_notify_admins(dp)
+    print('Bot on')
 
-@dp.message_handler()
-async def getMsg(message: types.message):
-    chatId = message.chat.id
-    text = message.text + f' {message.from_user.full_name}'
+    set_commands(dp)
 
-    await message.answer(text)
-    print(text)
+if __name__ == '__main__':
+    from aiogram import executor
+    from handlers import dp
 
-executor.start_polling(dp)
+    executor.start_polling(dp, on_startup=on_startup)
